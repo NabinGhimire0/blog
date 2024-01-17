@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -20,7 +21,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.category.create');
     }
 
     /**
@@ -28,7 +29,22 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request -> validate([
+            'name' => 'required',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'status' => 'boolean'
+        ]);
+
+        $category = new Category();
+        $category->name = $request->name;
+        if($request->hasFile('image'))
+        {
+            $imagePath = $request->file('image')->store('image');
+            $category->image = $imagePath;
+        }
+        $category->status = $request->status;
+        $category->save();
+        return redirect('/category')->with('success','category created Successfully');
     }
 
     /**
